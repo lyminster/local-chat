@@ -1,0 +1,11 @@
+<div class="container-chat">
+  <div>body</div>
+  <div class="footer-chat">
+    <form class="chat-form" [formGroup]="form" (submit)="sendMessage()" novalidate>
+      <div class="input-form">
+        <input formControlName="message" type="text" placeholder="Enter Message" />
+        <button type="submit" class="btn">Enter</button>
+      </div>
+    </form>
+  </div>
+</div>
