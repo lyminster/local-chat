@@ -1,11 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import {
-  FormBuilder,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { LoginNameService } from '../shared/services/login-name.service';
 
 @Component({
   selector: 'app-login',
@@ -16,11 +12,13 @@ import {
 })
 export class LoginComponent {
   fb = inject(FormBuilder);
+  loginService = inject(LoginNameService);
+
   form = this.fb.group({
     name: ['', Validators.required],
   });
 
   login() {
-    console.log(this.form.getRawValue());
+    this.loginService.username.set(this.form.controls['name'].value!);
   }
 }
