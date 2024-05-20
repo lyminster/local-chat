@@ -1,0 +1,12 @@
+<section>
+  <form class="container-login" [formGroup]="form" (submit)="login()" novalidate>
+    <div class="title">👤 Enter Your Name</div>
+    <div class="input-name">
+      <input formControlName="name" type="text" placeholder="Enter Name" />
+      <button [disabled]="!form.valid" type="submit" class="btn">Enter</button>
+    </div>
+    @if(form.controls['name'].invalid && (form.controls['name'].dirty || form.controls['name'].touched)){ @if(form.controls['name'].errors?.['required']){
+    <div class="err-msg">Your name is required !</div>
+    } }
+  </form>
+</section>
