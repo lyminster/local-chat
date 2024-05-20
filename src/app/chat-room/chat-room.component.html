@@ -1,5 +1,20 @@
 <div class="container-chat">
-  <div>body</div>
+  <div class="body-chat">
+    @for(data of storeChat.localStorageObservable| async;track data){
+    <div [class]="data.username == storeLogin.username() ? 'bubble-me' : 'bubble-they'">
+      <div class="header">
+        <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D" alt="" />
+
+        <span>{{ data.username }}</span>
+        <span>{{ data.createdAt | date : "dd-MM-yyyy" }}</span>
+      </div>
+
+      <div class="message">{{ data.message }}</div>
+      <div></div>
+    </div>
+    }
+  </div>
+
   <div class="footer-chat">
     <form class="chat-form" [formGroup]="form" (submit)="sendMessage()" novalidate>
       <div class="input-form">

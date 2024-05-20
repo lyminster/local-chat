@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChatStoreService } from '../shared/services/chat-store.service';
 import { IChat } from '../shared/interface/chat-interface';
 import { LoginNameService } from '../shared/services/login-name.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-chat-room',
@@ -17,12 +18,10 @@ export class ChatRoomComponent {
   storeChat = inject(ChatStoreService);
   storeLogin = inject(LoginNameService);
 
+  listData$ = new BehaviorSubject<IChat[]>([]);
+
   form = this.fb.group({
     message: ['', Validators.required],
-  });
-
-  getdata = effect(() => {
-    console.log(this.storeChat.listChat());
   });
 
   sendMessage(): void {
@@ -31,7 +30,12 @@ export class ChatRoomComponent {
       username: this.storeLogin.username(),
       message: this.form.controls['message'].value!,
     };
-    this.storeChat.addOne(data);
+    this.storeChat.addToStorage(data);
     this.form.reset();
+  }
+
+  ngOnInit(): void {
+    // const listChat: IChat[] = JSON.parse(localStorage.getItem(this.storeChat.LOCALSTORAGE_KEY)!) as IChat[];
+    // this.listData$.next(listChat);
   }
 }

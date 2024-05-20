@@ -82,3 +82,69 @@
     }
   }
 }
+
+.body-chat {
+  height: -webkit-calc(100% - 100px);
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  padding: 10px 20px;
+
+  .bubble-they {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+    .header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: contain;
+      }
+    }
+    .message {
+      font-weight: bold;
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 15px;
+      border: 1px solid rgb(53, 53, 253);
+      background-color: rgb(53, 53, 253);
+      color: white;
+      width: fit-content;
+    }
+  }
+
+  .bubble-me {
+    display: grid;
+    gap: 10px;
+    justify-items: end;
+
+    .header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+
+      img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: contain;
+      }
+    }
+    .message {
+      font-weight: bold;
+      font-size: 20px;
+      padding: 10px;
+      border-radius: 15px;
+
+      border: 1px solid rgb(1, 187, 1);
+      background-color: rgb(1, 187, 1);
+      color: white;
+      width: fit-content;
+    }
+  }
+}
