@@ -45,11 +45,9 @@ export class ChatRoomComponent {
     this.isLoading.set(true);
     const currentLength = this.displayedArray().length;
     const allArray = JSON.parse(localStorage.getItem(this.storeChat.LOCALSTORAGE_KEY)!);
-    const moreItems = allArray.slice(currentLength - this.itemsToShow);
-    console.log(Math.max(0, currentLength - this.itemsToShow));
-    console.log(moreItems);
+    const moreItems = allArray.slice(Math.max(0, allArray.length - this.itemsToShow - currentLength), allArray.length - currentLength);
     this.displayedArray.update((state) => {
-      return [...state, ...moreItems];
+      return [...moreItems, ...state];
     });
     this.isLoading.set(false);
   }
@@ -60,8 +58,7 @@ export class ChatRoomComponent {
 
     // Check if user has scrolled to the top
     if (scrollTop === 0) {
-      // this.loadMoreItems();
-      console.log('user move to top');
+      this.loadMoreItems();
     }
   }
 
@@ -75,9 +72,11 @@ export class ChatRoomComponent {
   }
 
   ngOnInit(): void {
-    // this.loadMoreItems();
+    this.loadMoreItems();
     this.storeChat.localStorageObservable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
-      this.listData$.next(val);
+      this.displayedArray.update((state) => {
+        return [...state, val[val.length - 1]];
+      });
     });
   }
 
