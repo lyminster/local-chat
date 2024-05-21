@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChatStoreService } from '../shared/services/chat-store.service';
 import { IChat } from '../shared/interface/chat-interface';
 import { LoginNameService } from '../shared/services/login-name.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-chat-room',
@@ -15,10 +16,15 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ChatRoomComponent {
   fb = inject(FormBuilder);
+  destroyRef = inject(DestroyRef);
   storeChat = inject(ChatStoreService);
   storeLogin = inject(LoginNameService);
+  isLoading = signal<boolean>(false);
 
-  listData$ = new BehaviorSubject<IChat[]>([]);
+  @ViewChild('scrollContainer', { static: false }) scrollContainer!: ElementRef;
+  displayedArray = signal<IChat[]>([]);
+  listData$ = new BehaviorSubject<IChat[]>(JSON.parse(localStorage.getItem(this.storeChat.LOCALSTORAGE_KEY)!));
+  itemsToShow = 10;
 
   form = this.fb.group({
     message: ['', Validators.required],
@@ -32,10 +38,51 @@ export class ChatRoomComponent {
     };
     this.storeChat.addToStorage(data);
     this.form.reset();
+    this.scrollToBottom();
+  }
+
+  loadMoreItems() {
+    this.isLoading.set(true);
+    const currentLength = this.displayedArray().length;
+    const allArray = JSON.parse(localStorage.getItem(this.storeChat.LOCALSTORAGE_KEY)!);
+    const moreItems = allArray.slice(currentLength - this.itemsToShow);
+    console.log(Math.max(0, currentLength - this.itemsToShow));
+    console.log(moreItems);
+    this.displayedArray.update((state) => {
+      return [...state, ...moreItems];
+    });
+    this.isLoading.set(false);
+  }
+
+  // Scroll event listener for the specific element
+  onElementScroll(event: Event): void {
+    const scrollTop = (event.target as HTMLElement).scrollTop;
+
+    // Check if user has scrolled to the top
+    if (scrollTop === 0) {
+      // this.loadMoreItems();
+      console.log('user move to top');
+    }
+  }
+
+  scrollToBottom(): void {
+    ``;
+    try {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   ngOnInit(): void {
-    // const listChat: IChat[] = JSON.parse(localStorage.getItem(this.storeChat.LOCALSTORAGE_KEY)!) as IChat[];
-    // this.listData$.next(listChat);
+    // this.loadMoreItems();
+    this.storeChat.localStorageObservable.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((val) => {
+      this.listData$.next(val);
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+    this.scrollContainer.nativeElement.addEventListener('scroll', this.onElementScroll.bind(this));
   }
 }
